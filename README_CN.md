@@ -1,7 +1,7 @@
 # @arshdelight/singlekey
 
 <p align="center">
-  <strong>Secure AI credential management for modern applications</strong>
+  <strong>现代化应用的安全 AI 凭证管理</strong>
 </p>
 
 <p align="center">
@@ -17,25 +17,25 @@
 </p>
 
 <p align="center">
-  English | <a href="README_CN.md">中文</a>
+  <a href="README.md">English</a> | 中文
 </p>
 
-## Features
+## 特性
 
-- 🔒 Securely resolve SingleKey to AI credentials
-- 🌐 Works with any AI API provider
-- 📦 Zero dependencies
-- ⚡ Simple and lightweight
-- 🎯 TypeScript support out of the box
-- 📝 Clear error messages from server
+- 🔒 安全地将 SingleKey 解析为 AI 凭证
+- 🌐 支持任何 AI API 提供商
+- 📦 零依赖
+- ⚡ 简单轻量
+- 🎯 开箱即用的 TypeScript 支持
+- 📝 清晰的服务器错误信息
 
-## Installation
+## 安装
 
 ```bash
 npm install @arshdelight/singlekey
 ```
 
-## Quick Start
+## 快速开始
 
 ```javascript
 import { parse } from '@arshdelight/singlekey';
@@ -46,9 +46,9 @@ console.log(credentials.apikey);
 console.log(credentials.model);
 ```
 
-## Usage
+## 使用
 
-### Basic Usage
+### 基本使用
 
 ```typescript
 import { parse } from '@arshdelight/singlekey';
@@ -63,7 +63,7 @@ async function useAI() {
 }
 ```
 
-### With Custom API Endpoint
+### 使用自定义 API 端点
 
 ```typescript
 import { parse } from '@arshdelight/singlekey';
@@ -74,7 +74,7 @@ const credentials = await parse(
 );
 ```
 
-### With OpenAI
+### 与 OpenAI 一起使用
 
 ```typescript
 import { parse } from '@arshdelight/singlekey';
@@ -97,30 +97,30 @@ async function chat() {
 }
 ```
 
-## API Reference
+## API 参考
 
 ### parse(key: string, apiBaseUrl?: string): Promise&lt;ParseResult&gt;
 
-Resolves a SingleKey to AI credentials via API.
+通过 API 将 SingleKey 解析为 AI 凭证。
 
-**Parameters:**
-- `key` (string, required): The SingleKey to parse
-- `apiBaseUrl` (string, optional): Custom API endpoint URL. Defaults to `https://singlekey.arshdelight.com/api/v1`
+**参数:**
+- `key` (string, 必需): 要解析的 SingleKey
+- `apiBaseUrl` (string, 可选): 自定义 API 端点 URL。默认为 `https://singlekey.arshdelight.com/api/v1`
 
-**Returns:**
-- `Promise<ParseResult>`: Object containing:
-  - `baseurl` (string): AI API base URL
-  - `apikey` (string): AI API key
-  - `model` (string): AI model name
+**返回:**
+- `Promise<ParseResult>`: 包含以下内容的对象:
+  - `baseurl` (string): AI API 基础 URL
+  - `apikey` (string): AI API 密钥
+  - `model` (string): AI 模型名称
 
-**Throws:**
-- Network error if request fails
-- Server-specific error messages (e.g., "IP不在白名单中", "无效的SingleKey")
-- HTTP error with status code as fallback
+**抛出错误:**
+- 请求失败时的网络错误
+- 服务器特定错误信息（例如："IP不在白名单中"、"无效的SingleKey"）
+- 作为后备的带状态码的 HTTP 错误
 
-## Error Handling
+## 错误处理
 
-The library provides clear, actionable error messages from the server:
+该库提供来自服务器的清晰、可操作的错误信息：
 
 ```typescript
 import { parse } from '@arshdelight/singlekey';
@@ -129,18 +129,18 @@ try {
   const credentials = await parse('your-singlekey');
 } catch (error) {
   if (error.message.includes('IP不在白名单中')) {
-    console.log('Please add your IP to the whitelist');
+    console.log('请将您的 IP 添加到白名单');
   } else if (error.message.includes('无效的SingleKey')) {
-    console.log('Please check your SingleKey');
+    console.log('请检查您的 SingleKey');
   } else if (error.message.includes('HTTP error')) {
-    console.log('API request failed:', error.message);
+    console.log('API 请求失败:', error.message);
   } else {
-    console.log('Network error:', error.message);
+    console.log('网络错误:', error.message);
   }
 }
 ```
 
-## TypeScript Types
+## TypeScript 类型
 
 ```typescript
 interface ParseResult {
@@ -152,6 +152,6 @@ interface ParseResult {
 function parse(key: string, apiBaseUrl?: string): Promise<ParseResult>;
 ```
 
-## License
+## 许可证
 
 MIT © Arshdelight

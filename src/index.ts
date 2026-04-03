@@ -18,9 +18,14 @@ export async function parse(
     body: JSON.stringify({ key })
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
+    if (data && data.error) {
+      throw new Error(data.error);
+    }
     throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
   }
 
-  return response.json();
+  return data;
 }

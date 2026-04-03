@@ -68,9 +68,21 @@ describe('singlekey parse', () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       status: 403,
-      statusText: 'Forbidden'
+      statusText: 'Forbidden',
+      json: async () => ({})
     });
 
     await expect(parse('test-single-key')).rejects.toThrow('HTTP error: 403 Forbidden');
+  });
+
+  it('should throw error with server error message', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      statusText: 'Bad Request',
+      json: async () => ({ error: 'IP不在白名单中' })
+    });
+
+    await expect(parse('test-single-key')).rejects.toThrow('IP不在白名单中');
   });
 });
