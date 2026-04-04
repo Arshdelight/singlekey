@@ -8,7 +8,7 @@ export async function parse(
   key: string,
   apiBaseUrl?: string
 ): Promise<ParseResult> {
-  const url = apiBaseUrl || 'https://singlekey.arshdelight.com/api/v1';
+  const url = apiBaseUrl || 'https://practihub.com/api/singlekey/v1';
 
   const response = await fetch(url, {
     method: 'POST',

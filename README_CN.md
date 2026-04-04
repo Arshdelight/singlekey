@@ -105,7 +105,7 @@ async function chat() {
 
 **参数:**
 - `key` (string, 必需): 要解析的 SingleKey
-- `apiBaseUrl` (string, 可选): 自定义 API 端点 URL。默认为 `https://singlekey.arshdelight.com/api/v1`
+- `apiBaseUrl` (string, 可选): 自定义 API 端点 URL。默认为 `https://www.practihub.com/api/singlekey/v1`
 
 **返回:**
 - `Promise<ParseResult>`: 包含以下内容的对象:

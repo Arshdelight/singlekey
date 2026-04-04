@@ -24,7 +24,7 @@ describe('singlekey parse', () => {
 
     expect(result).toEqual(mockResponse);
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://singlekey.arshdelight.com/api/v1',
+      'https://practihub.com/api/singlekey/v1',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -105,7 +105,7 @@ Resolves a SingleKey to AI credentials via API.
 
 **Parameters:**
 - `key` (string, required): The SingleKey to parse
-- `apiBaseUrl` (string, optional): Custom API endpoint URL. Defaults to `https://singlekey.arshdelight.com/api/v1`
+- `apiBaseUrl` (string, optional): Custom API endpoint URL. Defaults to `https://www.practihub.com/api/singlekey/v1`
 
 **Returns:**
 - `Promise<ParseResult>`: Object containing:
