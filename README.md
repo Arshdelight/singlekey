@@ -8,6 +8,9 @@
   <a href="https://www.npmjs.com/package/@arshdelight/singlekey">
     <img src="https://img.shields.io/npm/v/@arshdelight/singlekey.svg" alt="npm version">
   </a>
+  <a href="https://github.com/arshdelight/singlekey">
+    <img src="https://img.shields.io/github/stars/arshdelight/singlekey.svg" alt="GitHub stars">
+  </a>
   <a href="https://github.com/arshdelight/singlekey/blob/main/LICENSE">
     <img src="https://img.shields.io/npm/l/@arshdelight/singlekey.svg" alt="license">
   </a>
