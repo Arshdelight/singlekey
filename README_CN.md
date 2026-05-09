@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | 中文
+  <a href="https://github.com/arshdelight/singlekey/blob/main/README.md">English</a> | 中文
 </p>
 
 ## 特性
@@ -50,6 +50,8 @@ const credentials = await parse('your-singlekey');
 console.log(credentials.baseurl);
 console.log(credentials.apikey);
 console.log(credentials.model);
+console.log(credentials.id);    // 模型配置ID
+console.log(credentials.name);  // 模型显示名称
 ```
 
 ### Bundle 密钥（多模型）
@@ -61,9 +63,9 @@ const { bundleName, categories } = await parse('your-bundle-key');
 
 console.log(`Bundle: ${bundleName}`);
 
-// 遍历每个类别
+// 遍历每个类别，包含模型元数据
 for (const [category, model] of Object.entries(categories)) {
-  console.log(`${category}:`, model.baseurl, model.apikey, model.model);
+  console.log(`${category}:`, model.name, `(${model.id})`, model.baseurl, model.apikey, model.model);
 }
 
 // 为向后兼容，baseurl/apikey/model 会自动取第一个有效类别的值：
@@ -173,6 +175,14 @@ interface ParseResult {
   /** 所有类别的解密凭证 */
   categories: Record<string, CategoryModel>;
   /**
+   * 第一个有效类别的 id — 标识使用的是哪个模型配置。
+   */
+  id: string;
+  /**
+   * 第一个有效类别的 name — 人类可读的模型显示名称。
+   */
+  name: string;
+  /**
    * 第一个有效类别的 baseurl — 向后兼容。
    * @deprecated 建议使用 categories
    */
@@ -190,14 +200,21 @@ interface ParseResult {
 }
 
 interface CategoryModel {
+  /** 模型配置 ID（8位字母数字） */
+  id: string;
+  /** 人类可读的模型显示名称 */
+  name: string;
+  /** API 基础地址 */
   baseurl: string;
+  /** API 密钥 */
   apikey: string;
+  /** 模型名称标识 */
   model: string;
 }
 ```
 
 **旧版响应的向后兼容性:**
-解析传统单模型密钥时，返回结果中 `bundleName` 为空字符串，`categories` 为 `{ default: { baseurl, apikey, model } }`。`baseurl`、`apikey`、`model` 字段仍然有值，确保未升级的代码正常运行。
+解析传统单模型密钥时，返回结果中 `bundleName` 为空字符串，`categories` 为 `{ default: { id, name, baseurl, apikey, model } }`。`baseurl`、`apikey`、`model` 字段仍然有值，确保未升级的代码正常运行。
 
 **抛出错误:**
 - 请求失败时的网络错误

@@ -10,6 +10,8 @@ describe('singlekey parse', () => {
   describe('legacy single-model response', () => {
     it('should parse single-model response successfully', async () => {
       const mockResponse = {
+        id: 'abc12345',
+        name: 'My GPT-4 Model',
         baseurl: 'https://api.openai.com/v1',
         apikey: 'sk-test123',
         model: 'gpt-4'
@@ -24,8 +26,10 @@ describe('singlekey parse', () => {
 
       expect(result.bundleName).toBe('');
       expect(result.categories).toEqual({
-        default: { baseurl: 'https://api.openai.com/v1', apikey: 'sk-test123', model: 'gpt-4' }
+        default: { id: 'abc12345', name: 'My GPT-4 Model', baseurl: 'https://api.openai.com/v1', apikey: 'sk-test123', model: 'gpt-4' }
       });
+      expect(result.id).toBe('abc12345');
+      expect(result.name).toBe('My GPT-4 Model');
       expect(result.baseurl).toBe('https://api.openai.com/v1');
       expect(result.apikey).toBe('sk-test123');
       expect(result.model).toBe('gpt-4');
@@ -33,6 +37,8 @@ describe('singlekey parse', () => {
 
     it('should use custom API URL', async () => {
       const mockResponse = {
+        id: 'abc12345',
+        name: 'My Model',
         baseurl: 'https://api.openai.com/v1',
         apikey: 'sk-test123',
         model: 'gpt-4'
@@ -63,11 +69,15 @@ describe('singlekey parse', () => {
         bundleName: 'myapp',
         categories: {
           language: {
+            id: 'abc111',
+            name: 'GPT-4',
             baseurl: 'https://api.openai.com/v1',
             apikey: 'sk-openai-xxx',
             model: 'gpt-4'
           },
           vector: {
+            id: 'abc222',
+            name: 'Embedding',
             baseurl: 'https://api.openai.com/v1',
             apikey: 'sk-embed-xxx',
             model: 'text-embedding-3'
@@ -84,6 +94,8 @@ describe('singlekey parse', () => {
 
       expect(result.bundleName).toBe('myapp');
       expect(result.categories).toEqual(mockResponse.categories);
+      expect(result.id).toBe('abc111');
+      expect(result.name).toBe('GPT-4');
       expect(result.baseurl).toBe('https://api.openai.com/v1');
       expect(result.apikey).toBe('sk-openai-xxx');
       expect(result.model).toBe('gpt-4');
@@ -104,6 +116,8 @@ describe('singlekey parse', () => {
 
       expect(result.bundleName).toBe('empty-bundle');
       expect(result.categories).toEqual({});
+      expect(result.id).toBe('');
+      expect(result.name).toBe('');
       expect(result.baseurl).toBe('');
       expect(result.apikey).toBe('');
       expect(result.model).toBe('');
@@ -116,6 +130,8 @@ describe('singlekey parse', () => {
         bundleName: 'formyapp',
         categories: {
           language: {
+            id: 'abc111',
+            name: 'GPT-4',
             baseurl: 'https://api.openai.com/v1',
             apikey: 'sk-xxx',
             model: 'gpt-4'

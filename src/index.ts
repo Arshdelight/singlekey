@@ -1,4 +1,6 @@
 interface CategoryModel {
+  id: string;
+  name: string;
   baseurl: string;
   apikey: string;
   model: string;
@@ -10,6 +12,8 @@ interface BundleResult {
 }
 
 interface LegacyResult {
+  id: string;
+  name: string;
   baseurl: string;
   apikey: string;
   model: string;
@@ -22,6 +26,14 @@ export interface ParseResult {
   bundleName: string;
   /** All categories with their decrypted credentials (empty for legacy keys) */
   categories: Record<string, CategoryModel>;
+  /**
+   * First non-null category's or legacy response's id.
+   */
+  id: string;
+  /**
+   * First non-null category's or legacy response's name.
+   */
+  name: string;
   /**
    * First non-null category's baseurl — for backward compatibility.
    * @deprecated Use categories instead for multi-model access.
@@ -51,7 +63,7 @@ function getFirstCategory(data: BundleResult): CategoryModel {
       return model;
     }
   }
-  return { baseurl: '', apikey: '', model: '' };
+  return { id: '', name: '', baseurl: '', apikey: '', model: '' };
 }
 
 export async function parse(
@@ -82,6 +94,8 @@ export async function parse(
     return {
       bundleName: data.bundleName,
       categories: data.categories,
+      id: first.id,
+      name: first.name,
       baseurl: first.baseurl,
       apikey: first.apikey,
       model: first.model,
@@ -94,11 +108,15 @@ export async function parse(
     bundleName: '',
     categories: {
       default: {
+        id: legacy.id,
+        name: legacy.name,
         baseurl: legacy.baseurl,
         apikey: legacy.apikey,
         model: legacy.model,
       },
     },
+    id: legacy.id,
+    name: legacy.name,
     baseurl: legacy.baseurl,
     apikey: legacy.apikey,
     model: legacy.model,

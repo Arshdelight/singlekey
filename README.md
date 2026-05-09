@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  English | <a href="README_CN.md">中文</a>
+  English | <a href="https://github.com/arshdelight/singlekey/blob/main/README_CN.md">中文</a>
 </p>
 
 ## Features
@@ -50,6 +50,8 @@ const credentials = await parse('your-singlekey');
 console.log(credentials.baseurl);
 console.log(credentials.apikey);
 console.log(credentials.model);
+console.log(credentials.id);    // model ID
+console.log(credentials.name);  // model name
 ```
 
 ### Bundle Key (Multi-Model)
@@ -61,9 +63,9 @@ const { bundleName, categories } = await parse('your-bundle-key');
 
 console.log(`Bundle: ${bundleName}`);
 
-// Access each category
+// Access each category with model metadata
 for (const [category, model] of Object.entries(categories)) {
-  console.log(`${category}:`, model.baseurl, model.apikey, model.model);
+  console.log(`${category}:`, model.name, `(${model.id})`, model.baseurl, model.apikey, model.model);
 }
 
 // For backward compatibility, baseurl/apikey/model
@@ -174,6 +176,14 @@ interface ParseResult {
   /** All categories with their decrypted credentials */
   categories: Record<string, CategoryModel>;
   /**
+   * First category's id — identifies which model config is being used.
+   */
+  id: string;
+  /**
+   * First category's name — human-readable model display name.
+   */
+  name: string;
+  /**
    * First category's baseurl — backward compatible.
    * @deprecated Use categories instead.
    */
@@ -191,14 +201,21 @@ interface ParseResult {
 }
 
 interface CategoryModel {
+  /** Model config ID (8-char alphanumeric) */
+  id: string;
+  /** Human-readable model display name */
+  name: string;
+  /** API base URL */
   baseurl: string;
+  /** API key */
   apikey: string;
+  /** Model name identifier */
   model: string;
 }
 ```
 
 **Legacy response backward compatibility:**
-When parsing a legacy single-model key, the response will have `bundleName: ''` and `categories: { default: { baseurl, apikey, model } }`. The `baseurl`, `apikey`, and `model` fields remain populated for code that hasn't been updated yet.
+When parsing a legacy single-model key, the response will have `bundleName: ''` and `categories: { default: { id, name, baseurl, apikey, model } }`. The `baseurl`, `apikey`, and `model` fields remain populated for code that hasn't been updated yet.
 
 **Throws:**
 - Network error if request fails
