@@ -26,6 +26,7 @@
 ## 特性
 
 - 🔒 安全地将 SingleKey 解析为 AI 凭证
+- 📦 **Bundle 模式** — 一个密钥管理所有 AI 模型（语言、向量、视觉、语音、重排序）
 - 🌐 支持任何 AI API 提供商
 - 📦 零依赖
 - ⚡ 简单轻量
@@ -40,6 +41,8 @@ npm install @arshdelight/singlekey
 
 ## 快速开始
 
+### 传统单模型密钥
+
 ```javascript
 import { parse } from '@arshdelight/singlekey';
 
@@ -47,6 +50,24 @@ const credentials = await parse('your-singlekey');
 console.log(credentials.baseurl);
 console.log(credentials.apikey);
 console.log(credentials.model);
+```
+
+### Bundle 密钥（多模型）
+
+```typescript
+import { parse } from '@arshdelight/singlekey';
+
+const { bundleName, categories } = await parse('your-bundle-key');
+
+console.log(`Bundle: ${bundleName}`);
+
+// 遍历每个类别
+for (const [category, model] of Object.entries(categories)) {
+  console.log(`${category}:`, model.baseurl, model.apikey, model.model);
+}
+
+// 为向后兼容，baseurl/apikey/model 会自动取第一个有效类别的值：
+const { baseurl, apikey, model } = await parse('your-bundle-key');
 ```
 
 ## 使用
@@ -77,7 +98,7 @@ const credentials = await parse(
 );
 ```
 
-### 与 OpenAI 一起使用
+### 与 OpenAI 一起使用（传统密钥）
 
 ```typescript
 import { parse } from '@arshdelight/singlekey';
@@ -100,6 +121,38 @@ async function chat() {
 }
 ```
 
+### 多个服务商一起使用（Bundle 密钥）
+
+```typescript
+import { parse } from '@arshdelight/singlekey';
+import OpenAI from 'openai';
+
+async function useBundle() {
+  const { categories } = await parse('your-bundle-key');
+
+  // 语言模型
+  const llm = categories.language;
+  const openai = new OpenAI({
+    baseURL: llm.baseurl,
+    apiKey: llm.apikey
+  });
+
+  // 向量模型
+  const embedding = categories.vector;
+  const embedResponse = await fetch(`${embedding.baseurl}/embeddings`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${embedding.apikey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: embedding.model,
+      input: 'Hello world'
+    })
+  });
+}
+```
+
 ## API 参考
 
 ### parse(key: string, apiBaseUrl?: string): Promise&lt;ParseResult&gt;
@@ -112,9 +165,39 @@ async function chat() {
 
 **返回:**
 - `Promise<ParseResult>`: 包含以下内容的对象:
-  - `baseurl` (string): AI API 基础 URL
-  - `apikey` (string): AI API 密钥
-  - `model` (string): AI 模型名称
+
+```typescript
+interface ParseResult {
+  /** Bundle 名称（传统密钥为空字符串） */
+  bundleName: string;
+  /** 所有类别的解密凭证 */
+  categories: Record<string, CategoryModel>;
+  /**
+   * 第一个有效类别的 baseurl — 向后兼容。
+   * @deprecated 建议使用 categories
+   */
+  baseurl: string;
+  /**
+   * 第一个有效类别的 apikey — 向后兼容。
+   * @deprecated 建议使用 categories
+   */
+  apikey: string;
+  /**
+   * 第一个有效类别的 model — 向后兼容。
+   * @deprecated 建议使用 categories
+   */
+  model: string;
+}
+
+interface CategoryModel {
+  baseurl: string;
+  apikey: string;
+  model: string;
+}
+```
+
+**旧版响应的向后兼容性:**
+解析传统单模型密钥时，返回结果中 `bundleName` 为空字符串，`categories` 为 `{ default: { baseurl, apikey, model } }`。`baseurl`、`apikey`、`model` 字段仍然有值，确保未升级的代码正常运行。
 
 **抛出错误:**
 - 请求失败时的网络错误
@@ -141,18 +224,6 @@ try {
     console.log('网络错误:', error.message);
   }
 }
-```
-
-## TypeScript 类型
-
-```typescript
-interface ParseResult {
-  baseurl: string;
-  apikey: string;
-  model: string;
-}
-
-function parse(key: string, apiBaseUrl?: string): Promise<ParseResult>;
 ```
 
 ## 许可证

@@ -26,6 +26,7 @@
 ## Features
 
 - 🔒 Securely resolve SingleKey to AI credentials
+- 📦 **Bundle mode** — one key to rule all your AI models (LLM, vector, vision, voice, rerank)
 - 🌐 Works with any AI API provider
 - 📦 Zero dependencies
 - ⚡ Simple and lightweight
@@ -40,6 +41,8 @@ npm install @arshdelight/singlekey
 
 ## Quick Start
 
+### Legacy Single-Model Key
+
 ```javascript
 import { parse } from '@arshdelight/singlekey';
 
@@ -47,6 +50,25 @@ const credentials = await parse('your-singlekey');
 console.log(credentials.baseurl);
 console.log(credentials.apikey);
 console.log(credentials.model);
+```
+
+### Bundle Key (Multi-Model)
+
+```typescript
+import { parse } from '@arshdelight/singlekey';
+
+const { bundleName, categories } = await parse('your-bundle-key');
+
+console.log(`Bundle: ${bundleName}`);
+
+// Access each category
+for (const [category, model] of Object.entries(categories)) {
+  console.log(`${category}:`, model.baseurl, model.apikey, model.model);
+}
+
+// For backward compatibility, baseurl/apikey/model
+// are automatically filled from the first available category:
+const { baseurl, apikey, model } = await parse('your-bundle-key');
 ```
 
 ## Usage
@@ -77,7 +99,7 @@ const credentials = await parse(
 );
 ```
 
-### With OpenAI
+### With OpenAI (Legacy Key)
 
 ```typescript
 import { parse } from '@arshdelight/singlekey';
@@ -100,6 +122,38 @@ async function chat() {
 }
 ```
 
+### With Multiple Providers (Bundle Key)
+
+```typescript
+import { parse } from '@arshdelight/singlekey';
+import OpenAI from 'openai';
+
+async function useBundle() {
+  const { categories } = await parse('your-bundle-key');
+
+  // Language model
+  const llm = categories.language;
+  const openai = new OpenAI({
+    baseURL: llm.baseurl,
+    apiKey: llm.apikey
+  });
+
+  // Vector model
+  const embedding = categories.vector;
+  const embedResponse = await fetch(`${embedding.baseurl}/embeddings`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${embedding.apikey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: embedding.model,
+      input: 'Hello world'
+    })
+  });
+}
+```
+
 ## API Reference
 
 ### parse(key: string, apiBaseUrl?: string): Promise&lt;ParseResult&gt;
@@ -112,9 +166,39 @@ Resolves a SingleKey to AI credentials via API.
 
 **Returns:**
 - `Promise<ParseResult>`: Object containing:
-  - `baseurl` (string): AI API base URL
-  - `apikey` (string): AI API key
-  - `model` (string): AI model name
+
+```typescript
+interface ParseResult {
+  /** Bundle name (empty string for legacy keys) */
+  bundleName: string;
+  /** All categories with their decrypted credentials */
+  categories: Record<string, CategoryModel>;
+  /**
+   * First category's baseurl — backward compatible.
+   * @deprecated Use categories instead.
+   */
+  baseurl: string;
+  /**
+   * First category's apikey — backward compatible.
+   * @deprecated Use categories instead.
+   */
+  apikey: string;
+  /**
+   * First category's model — backward compatible.
+   * @deprecated Use categories instead.
+   */
+  model: string;
+}
+
+interface CategoryModel {
+  baseurl: string;
+  apikey: string;
+  model: string;
+}
+```
+
+**Legacy response backward compatibility:**
+When parsing a legacy single-model key, the response will have `bundleName: ''` and `categories: { default: { baseurl, apikey, model } }`. The `baseurl`, `apikey`, and `model` fields remain populated for code that hasn't been updated yet.
 
 **Throws:**
 - Network error if request fails
@@ -141,18 +225,6 @@ try {
     console.log('Network error:', error.message);
   }
 }
-```
-
-## TypeScript Types
-
-```typescript
-interface ParseResult {
-  baseurl: string;
-  apikey: string;
-  model: string;
-}
-
-function parse(key: string, apiBaseUrl?: string): Promise<ParseResult>;
 ```
 
 ## License
